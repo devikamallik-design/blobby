@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Blobby: animated gradient backgrounds</title>
+  <meta name="description" content="Make animated blob gradient backgrounds in your browser. Pick colours or pull them from a photo, then save a still or a seamless video loop." />
+  <meta property="og:title" content="Blobby" />
+  <meta property="og:description" content="Animated blob gradient backgrounds, made in your browser." />
+  <meta name="theme-color" content="#1B1840" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="stage" role="img" aria-label="Live preview of your animated background"></canvas>
+
+  <div class="dock" role="toolbar" aria-label="Preview controls">
+    <button class="dock-btn" id="playBtn" type="button" aria-pressed="false">Pause</button>
+    <button class="dock-btn" id="panelBtn" type="button" aria-controls="panel" aria-expanded="true">Hide controls</button>
+  </div>
+
+  <aside class="panel" id="panel" aria-label="Background settings">
+    <header class="panel-head">
+      <h1 class="wordmark">Blobby</h1>
+      <p class="lede">Make an animated gradient background. Tweak it here, then save a still or a seamless loop.</p>
+    </header>
+
+    <section class="group" aria-labelledby="h-start">
+      <h2 id="h-start">Start from</h2>
+      <div class="presets" id="presets"></div>
+      <label class="btn btn-wide photo-btn">
+        <input type="file" id="photoInput" accept="image/*" />
+        Pull colours from a photo
+      </label>
+      <p class="hint">Or drop an image anywhere on the page.</p>
+    </section>
+
+    <section class="group" aria-labelledby="h-colours">
+      <h2 id="h-colours">Colours</h2>
+      <div class="swatches" id="swatches"></div>
+      <div class="bg-row">
+        <span>Background</span>
+        <label class="swatch swatch-bg" id="bgSwatch">
+          <input type="color" id="bgInput" aria-label="Background colour" />
+        </label>
+      </div>
+    </section>
+
+    <section class="group" aria-labelledby="h-shape">
+      <h2 id="h-shape">Shape</h2>
+      <div class="field">
+        <label for="size">Blob size</label>
+        <input type="range" id="size" data-key="size" min="0" max="1" step="0.01" />
+      </div>
+      <div class="field">
+        <label for="edge">Edges <span class="range-ends">soft to defined</span></label>
+        <input type="range" id="edge" data-key="edge" min="0" max="1" step="0.01" />
+      </div>
+      <div class="field">
+        <label for="warp">Wobble</label>
+        <input type="range" id="warp" data-key="warp" min="0" max="1" step="0.01" />
+      </div>
+    </section>
+
+    <section class="group" aria-labelledby="h-motion">
+      <h2 id="h-motion">Motion</h2>
+      <div class="field">
+        <label for="move">How far they drift</label>
+        <input type="range" id="move" data-key="move" min="0" max="1" step="0.01" />
+      </div>
+      <div class="field">
+        <label for="speed">Speed <span class="range-ends" id="loopLen"></span></label>
+        <input type="range" id="speed" data-key="speed" min="0" max="1" step="0.01" />
+      </div>
+      <button class="btn btn-wide" id="shuffleBtn" type="button">Shuffle positions</button>
+    </section>
+
+    <section class="group" aria-labelledby="h-texture">
+      <h2 id="h-texture">Texture</h2>
+      <div class="field">
+        <label for="grain">Grain</label>
+        <input type="range" id="grain" data-key="grain" min="0" max="1" step="0.01" />
+      </div>
+    </section>
+
+    <section class="group" aria-labelledby="h-export">
+      <h2 id="h-export">Export</h2>
+      <div class="field">
+        <label for="sizeSelect">Size</label>
+        <select id="sizeSelect">
+          <option value="window">This window</option>
+          <option value="1920x1080">1920 × 1080 (landscape)</option>
+          <option value="1080x1920">1080 × 1920 (story)</option>
+          <option value="1080x1080">1080 × 1080 (square)</option>
+          <option value="1080x1350">1080 × 1350 (portrait post)</option>
+          <option value="3840x2160">3840 × 2160 (4K still)</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="pngBtn" type="button">Save image</button>
+        <button class="btn btn-primary" id="recBtn" type="button">Record loop</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="linkBtn" type="button">Copy link</button>
+        <button class="btn" id="hexBtn" type="button">Copy hex codes</button>
+      </div>
+      <p class="hint">Loops start and end on the same frame, so they repeat without a jump. Videos are capped at 1920 px on the long side.</p>
+    </section>
+
+    <footer class="panel-foot">
+      <p>Shortcuts: Space pauses, H hides the controls, R shuffles.</p>
+      <p>Made by <a href="https://devimallik.framer.website/" target="_blank" rel="noopener">Devika Mallik</a></p>
+    </footer>
+  </aside>
+
+  <div class="rec-bar" id="recBar" hidden>
+    <span class="rec-dot" aria-hidden="true"></span>
+    <span id="recText">Recording</span>
+    <button class="dock-btn" id="recCancel" type="button">Cancel</button>
+  </div>
+
+  <div class="drop" id="drop" hidden><p>Drop the image to pull its colours</p></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <noscript><p class="noscript">Blobby needs JavaScript to draw the background.</p></noscript>
+  <script src="app.js"></script>
+</body>
+</html>

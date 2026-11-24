@@ -545,6 +545,7 @@
     const t = e.target;
     if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if ($("#intro")?.open) return;
     if (e.code === "Space" && !(t && t.tagName === "BUTTON")) { e.preventDefault(); setPlaying(!playing); }
     else if (e.key === "h" || e.key === "H") setPanel($("#panel").classList.contains("is-hidden"));
     else if (e.key === "r" || e.key === "R") shuffle();
@@ -784,10 +785,28 @@
     copy([state.bg, ...state.colors].join(", "), "Hex codes copied, background first.");
   });
 
+  // ---------- Intro pop-up: at most once a day per visitor ----------
+
+  function showIntroIfDue() {
+    const dlg = $("#intro");
+    if (!dlg || typeof dlg.showModal !== "function") return false;
+    const d = new Date();
+    const today = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    let last = null;
+    try { last = localStorage.getItem("blobby-intro-seen"); } catch {}
+    if (last === today) return false;
+    try { localStorage.setItem("blobby-intro-seen", today); } catch {}
+    dlg.showModal();
+    // Clicking the dimmed area outside the card closes it too.
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+    return true;
+  }
+
   // ---------- Go ----------
 
+  const introShown = showIntroIfDue();
   refresh();
   setPlaying(playing);
-  if (reduceMotion) toast("Motion is paused because your device asks for reduced motion. Press Play to preview it.");
+  if (reduceMotion && !introShown) toast("Motion is paused because your device asks for reduced motion. Press Play to preview it.");
   requestAnimationFrame((t) => { last = t; frame(t); });
 })();

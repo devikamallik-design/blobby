@@ -122,6 +122,19 @@
     <button class="dock-btn" id="recCancel" type="button">Cancel</button>
   </div>
 
+  <dialog class="intro" id="intro" aria-labelledby="introTitle">
+    <h2 id="introTitle">Create your own animated gradient background</h2>
+    <ol class="intro-steps">
+      <li><strong>Pick your colours.</strong> Start from a palette, tap a swatch to change it, or pull colours from a photo.</li>
+      <li><strong>Play with the controls.</strong> Change the blob size, edges, wobble, speed and grain. The preview updates as you go.</li>
+      <li><strong>Save it.</strong> Download a still image or record a seamless video loop, sized for screens, stories or posts.</li>
+    </ol>
+    <p class="intro-tip">Press H to hide the controls and see the full picture.</p>
+    <form method="dialog">
+      <button class="btn btn-primary btn-wide" id="introStart" value="start" autofocus>Start making</button>
+    </form>
+  </dialog>
+
   <div class="drop" id="drop" hidden><p>Drop the image to pull its colours</p></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 

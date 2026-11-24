@@ -470,7 +470,8 @@
   function updateLoopLabel() {
     const s = loopSeconds(state.speed);
     $("#loopLen").textContent = `${s}s loop`;
-    $("#recBtn").textContent = `Record loop (${s}s)`;
+    $("#recBtn").textContent = "Record loop";
+    $("#recBtn").setAttribute("aria-label", `Record a ${s} second loop`);
   }
 
   document.querySelectorAll('input[type="range"][data-key]').forEach((input) => {
